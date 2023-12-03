@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import { Close, Container, DisabledButton, Error, Form, Input, InputWrapper, Title, Wrapper } from "./auth-components";
 
-export default function CreateAccount({ onVisible }: { onVisible: any }) {
+export default function CreateAccount({ onVisible }: { onVisible?: any }) {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [accountInfo, setAccountInfo] = useState({
@@ -58,7 +58,7 @@ export default function CreateAccount({ onVisible }: { onVisible: any }) {
       <Container>
         <Close
           onClick={() => {
-            onVisible("create");
+            onVisible("create", false);
           }}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

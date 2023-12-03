@@ -24,7 +24,7 @@ export const Container = styled.div`
 
   p {
     text-align: center;
-    margin: 20px 0;
+    margin: 10px 0;
   }
 `;
 export const Form = styled.form`
@@ -55,6 +55,7 @@ export const Input = styled.input`
 
   &[type="submit"] {
     margin-top: 20px;
+    padding: 20px 10px;
     font-size: 20px;
     border-radius: 50px;
     background-color: #00acee;
@@ -80,7 +81,7 @@ export const LogoImg = styled.img`
 `;
 export const DisabledButton = styled.div`
   background-color: white;
-  padding: 25px 10px;
+  padding: 20px 10px;
   border-radius: 50px;
   opacity: 0.5;
   width: 100%;
@@ -89,9 +90,10 @@ export const DisabledButton = styled.div`
   color: black;
   text-align: center;
 `;
-export const Title = styled.h1`
+export const Title = styled.h1<{ marginValue?: any }>`
   font-size: 30px;
   font-weight: 600;
+  margin-bottom: ${(props) => props.marginValue || 0};
 `;
 export const fadeIn = keyframes`
   0%{
@@ -129,9 +131,7 @@ export const Close = styled.div`
   border-radius: 50%;
   cursor: pointer;
   &:hover {
-    background-color: white;
-    color: black;
-    opacity: 0.3;
+    background-color: rgba(255, 255, 255, 0.2);
   }
   svg {
     scale: 2;
@@ -140,4 +140,13 @@ export const Close = styled.div`
 export const Switcher = styled.span`
   margin-top: 20px;
   color: gray;
+
+  & > a {
+    color: #00acee;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;

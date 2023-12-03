@@ -3,6 +3,7 @@ import { useState } from "react";
 import CreateAccount from "../components/create-account";
 import { Dash } from "../components/text-style-conponents";
 import LoginForm from "../components/login-form";
+import GithubButton from "../components/github-login";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -26,7 +27,7 @@ const MainTitle = styled.h1`
 `;
 const SubTitle = styled.h4`
   font-size: 25px;
-  margin-bottom: 35px;
+  margin-bottom: 15px;
 `;
 const Column = styled.div`
   display: flex;
@@ -40,9 +41,9 @@ const Text = styled.div<{ size?: string; align: string; weight: number }>`
 
 const AuthButton = styled.div<{ alt?: boolean }>`
   width: 60%;
-  padding: 15px 10px;
+  padding: 13px;
   margin-bottom: 15px;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   display: flex;
   justify-content: center;
@@ -61,6 +62,11 @@ const AuthButton = styled.div<{ alt?: boolean }>`
       background-color: transparent;
       border: 2px solid gray;
       color: #00acee;
+
+      &:hover {
+        opacity: 1;
+        background-color: rgba(0, 172, 238, 0.2);
+      }
     `}
 `;
 const Terms = styled.div`
@@ -73,13 +79,13 @@ export default function Login() {
   const [toggleLogin, setLogin] = useState(false);
   const [toggleCreate, setCreate] = useState(false);
 
-  const onVisible = (target: string) => {
+  const onVisible = (target: string, value: boolean) => {
     switch (target) {
       case "login":
-        setLogin(!toggleLogin);
+        setLogin(value);
         break;
       case "create":
-        setCreate(!toggleCreate);
+        setCreate(value);
         break;
     }
   };
@@ -94,13 +100,13 @@ export default function Login() {
           <Column>
             <MainTitle>지금 일어나고 있는 일</MainTitle>
             <SubTitle>지금 가입하세요.</SubTitle>
-            <button>Github 로그인</button>
-            <Text size="16px" align="center" weight={400}>
-              <Dash>――――――――――</Dash> 또는 <Dash>――――――――――</Dash>
+            <GithubButton isLogin={false} widthValue={"60%"} />
+            <Text size="16px" align="start" weight={400}>
+              <Dash>――――――――</Dash> 또는 <Dash>――――――――</Dash>
             </Text>
             <AuthButton
               onClick={() => {
-                onVisible("create");
+                onVisible("create", true);
               }}>
               계정 만들기
             </AuthButton>
@@ -111,7 +117,7 @@ export default function Login() {
             <AuthButton
               alt
               onClick={() => {
-                onVisible("login");
+                onVisible("login", true);
               }}>
               로그인
             </AuthButton>

@@ -5,9 +5,29 @@ import { useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import { Dash } from "./text-style-conponents";
 import { Close, Container, DisabledButton, Error, Form, Input, InputWrapper, LogoImg, Switcher, Title, Wrapper } from "./auth-components";
+import GithubButton from "./github-login";
+import AuthSwither from "./auth-switcher";
+import styled from "styled-components";
+
+const ForgotPassword = styled.button`
+  padding: 10px 10px;
+  font-size: 16px;
+  background-color: black;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50px;
+  margin: 15px 0 30px 0;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+`;
 
 export default function LoginForm({ onVisible }: { onVisible: any }) {
   const navigate = useNavigate();
+
   const [isLoading, setLoading] = useState(false);
   const [accountInfo, setAccountInfo] = useState({
     email: "",
@@ -27,7 +47,7 @@ export default function LoginForm({ onVisible }: { onVisible: any }) {
       const { email, password } = accountInfo;
       if (name !== "" && email !== "" && password !== "") {
         setCheck(true);
-      } else {
+      } else if (name === "" || email === "" || password === "") {
         setCheck(false);
       }
     }
@@ -50,35 +70,43 @@ export default function LoginForm({ onVisible }: { onVisible: any }) {
     }
   };
 
+  const onClick = () => {
+    navigate("/reset-password");
+  };
   return (
-    <Wrapper>
-      <Container>
-        <Close
-          onClick={() => {
-            onVisible("login");
-          }}>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </Close>
-        <LogoImg src="/X_logo_2023_(white).png" />
-        <Title>X 가입하기</Title>
-        <button>Github 로그인</button>
-        <p>
-          <Dash>――――――――――</Dash> 또는 <Dash>――――――――――</Dash>
-        </p>
-        <Form onSubmit={onSubmit}>
-          <InputWrapper>
-            <Input onChange={onChange} name="email" value={email} type="email" placeholder="이메일" required />
-          </InputWrapper>
-          <InputWrapper>
-            <Input onChange={onChange} name="password" value={password} placeholder="비밀번호" type="password" required />
-          </InputWrapper>
-          {check ? <Input className="submit" type="submit" value={isLoading ? "로그인중..." : "로그인"} /> : <DisabledButton>로그인</DisabledButton>}
-        </Form>
-        {error ? <Error>{error}</Error> : null}
-        <Switcher>계정이 없으신가요? 가입하기</Switcher>
-      </Container>
-    </Wrapper>
+    <>
+      <Wrapper>
+        <Container>
+          <Close
+            onClick={() => {
+              onVisible("login", false);
+            }}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </Close>
+          <LogoImg src="/X_logo_2023_(white).png" />
+          <Title marginValue={"20px"}>X 가입하기</Title>
+          <GithubButton isLogin={true} widthValue={false} />
+          <p>
+            <Dash>―――――――――――</Dash> 또는 <Dash>―――――――――――</Dash>
+          </p>
+          <Form onSubmit={onSubmit}>
+            <InputWrapper>
+              <Input onChange={onChange} name="email" value={email} type="email" placeholder="이메일" required />
+            </InputWrapper>
+            <InputWrapper>
+              <Input onChange={onChange} name="password" value={password} placeholder="비밀번호" type="password" required />
+            </InputWrapper>
+            {check ? <Input className="submit" type="submit" value={isLoading ? "로그인중..." : "로그인"} /> : <DisabledButton>로그인</DisabledButton>}
+          </Form>
+          <ForgotPassword onClick={onClick}>비밀번호를 잊으셨나요?</ForgotPassword>
+          <Switcher>
+            계정이 없으신가요? <AuthSwither onVisible={onVisible}>가입하기 &rarr;</AuthSwither>
+          </Switcher>
+          {error ? <Error>{error}</Error> : null}
+        </Container>
+      </Wrapper>
+    </>
   );
 }
