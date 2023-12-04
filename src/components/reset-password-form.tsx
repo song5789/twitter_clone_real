@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
 
-const Description = styled.span`
+export const Description = styled.span`
   color: gray;
   margin: 20px 0;
 `;
