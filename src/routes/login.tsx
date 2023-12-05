@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { useState } from "react";
 import CreateAccount from "../components/create-account";
-import { Dash } from "../components/text-style-conponents";
+import { Dash } from "../components/common-conponents";
 import LoginForm from "../components/login-form";
 import GithubButton from "../components/github-login";
 

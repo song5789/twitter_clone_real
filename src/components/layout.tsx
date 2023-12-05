@@ -5,8 +5,7 @@ import { useState } from "react";
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-columns: 1.4fr 4fr 1fr;
-  gap: 20px;
+  grid-template-columns: 1fr 4fr;
   width: 100%;
   height: 100%;
   min-width: 1000px;
@@ -16,7 +15,7 @@ const Menu = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 1px solid gray;
+  border-right: 1px solid rgba(167, 168, 168, 0.5);
   padding: 0px 10px 10px 10px;
 `;
 const Column = styled.div`
@@ -96,7 +95,7 @@ const AvatarImg = styled.img`
 `;
 const UserName = styled.span`
   width: 75px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -116,6 +115,7 @@ const PostingButton = styled.button`
   border: none;
   color: white;
   font-size: 20px;
+  font-weight: 600;
   border-radius: 50px;
   cursor: pointer;
 
@@ -209,7 +209,7 @@ export default function Layout() {
               </svg>
             )}
           </Avatar>
-          <UserName>{user?.displayName ?? "기본 닉네임"}</UserName>
+          <UserName>{user?.displayName ?? "익명"}</UserName>
           <MeatBallMenu>
             {toggle ? (
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -231,13 +231,12 @@ export default function Layout() {
           </MeatBallMenu>
           {toggle ? (
             <UserExtraMenu>
-              <Logout onClick={moveToLogoutPage}>{`${user?.displayName ?? "기본닉네임"} 계정에서 로그아웃`}</Logout>
+              <Logout onClick={moveToLogoutPage}>{`${user?.displayName ?? "익명"} 계정에서 로그아웃`}</Logout>
             </UserExtraMenu>
           ) : null}
         </CurrentUser>
       </Menu>
       <Outlet />
-      <div style={{ borderLeft: "1px solid gray" }}>sidemenu</div>
     </Wrapper>
   );
 }

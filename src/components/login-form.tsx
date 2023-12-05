@@ -3,7 +3,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
-import { Dash } from "./text-style-conponents";
+import { Dash } from "./common-conponents";
 import { Close, Container, DisabledButton, Error, Form, Input, InputWrapper, LogoImg, Switcher, Title, Wrapper } from "./auth-components";
 import GithubButton from "./github-login";
 import AuthSwither from "./auth-switcher";
