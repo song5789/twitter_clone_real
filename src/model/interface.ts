@@ -5,5 +5,6 @@ export interface ITweet {
   username: string;
   userAvatar: string;
   createAt: number;
+  updateAt?: number;
   photo?: string;
 }

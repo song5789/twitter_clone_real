@@ -1,5 +1,11 @@
 import styled, { css } from "styled-components";
 import { ITweet } from "../model/interface";
+import { Close } from "./auth-components";
+import { convertToLocaleDate } from "../library/methods";
+import { auth } from "../firebase";
+import { useState } from "react";
+import { DeleteTweetModal } from "./delete-tweet-modal";
+import EditTweetModal from "./edit-tweet-modal";
 
 const Wrapper = styled.div`
   display: grid;
@@ -42,7 +48,6 @@ const Payload = styled.p`
   font-size: 18px;
 `;
 const PhotoContainer = styled.div`
-  width: 100%;
   border-radius: 30px;
   overflow: hidden;
   border: 1px solid rgba(167, 168, 168, 0.5);
@@ -55,6 +60,7 @@ const Timestamp = styled.span`
 `;
 const MeatBallButton = styled.div`
   width: 40px;
+  position: relative;
   padding: 10px;
   display: flex;
   justify-content: center;
@@ -67,8 +73,18 @@ const MeatBallButton = styled.div`
     color: gray;
     width: 100%;
   }
+  .popup-close {
+    svg {
+      color: white;
+    }
+  }
 
   &:hover {
+    .popup-close {
+      svg {
+        color: white;
+      }
+    }
     svg {
       color: #00acee;
     }
@@ -128,10 +144,49 @@ const TweetMenuIcon = styled.div<{ isReply?: boolean; isLike?: boolean }>`
       }
     `}
 `;
+const TweetPopupMenu = styled.div`
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 5px white;
+  background-color: black;
+  left: -400%;
+  top: 0;
+  padding: 35px 0 10px 0;
+`;
+const TweetEditButton = styled.button`
+  width: 200px;
+  padding: 10px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
 
-export default function Tweet({ username, photo, tweet, userAvatar, createAt }: ITweet) {
-  const convertToLocaleDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString();
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+`;
+
+export default function Tweet({ username, photo, tweet, userAvatar, createAt, userId, tweetId, updateAt }: ITweet) {
+  const user = auth.currentUser;
+  const [showPopup, setPopup] = useState(false);
+  const [showEditPopup, setEditPopup] = useState({
+    deleteModal: false,
+    editModal: false,
+  });
+  const { deleteModal, editModal } = showEditPopup;
+  const togglePopup = () => {
+    setPopup(!showPopup);
+  };
+  const showModal = (target: string, toggleValue: boolean) => {
+    setEditPopup({
+      ...showEditPopup,
+      [target]: toggleValue,
+    });
   };
   return (
     <Wrapper>
@@ -152,9 +207,9 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt }: 
         <Header>
           <Row>
             <Username>{username}</Username>
-            <Timestamp>{` · ${convertToLocaleDate(createAt)}`}</Timestamp>
+            <Timestamp>{` · ${updateAt ? `${convertToLocaleDate(updateAt)} (수정됨)` : convertToLocaleDate(createAt)}`}</Timestamp>
           </Row>
-          <MeatBallButton>
+          <MeatBallButton onClick={togglePopup}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
               <path
                 fillRule="evenodd"
@@ -162,6 +217,40 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt }: 
                 clipRule="evenodd"
               />
             </svg>
+            {showPopup ? (
+              <TweetPopupMenu>
+                {user?.uid === userId ? (
+                  <Column>
+                    <Close onClick={togglePopup} className="popup-close">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </Close>
+                    <TweetEditButton
+                      onClick={() => {
+                        showModal("editModal", true);
+                      }}>
+                      이 게시글을 수정
+                    </TweetEditButton>
+                    <TweetEditButton
+                      onClick={() => {
+                        showModal("deleteModal", true);
+                      }}>
+                      이 게시글을 삭제
+                    </TweetEditButton>
+                  </Column>
+                ) : (
+                  <Column>
+                    <Close onClick={togglePopup} className="popup-close">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </Close>
+                    <TweetEditButton>사용가능한 메뉴가 없습니다.</TweetEditButton>
+                  </Column>
+                )}
+              </TweetPopupMenu>
+            ) : null}
           </MeatBallButton>
         </Header>
         <Payload>{tweet}</Payload>
@@ -195,6 +284,8 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt }: 
           </TweetMenuItem>
         </TweetMenu>
       </Column>
+      {deleteModal ? <DeleteTweetModal showModal={showModal} userId={userId} tweetId={tweetId} photo={photo} /> : null}
+      {editModal ? <EditTweetModal showModal={showModal} userId={userId} tweetId={tweetId} photo={photo} tweet={tweet} /> : null}
     </Wrapper>
   );
 }

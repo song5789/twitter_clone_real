@@ -16,22 +16,22 @@ export default function Timeline() {
     const fetchTweets = async () => {
       const collectionRef = collection(db, "tweets");
       const tweetsQuery = query(collectionRef, orderBy("createAt", "desc"), limit(25));
-      // const QuerySnapshot = await getDocs(tweetsQuery);
-      // const tweets = QuerySnapshot.docs.map((doc) => {
-      //   const { tweet, username, userAvatar, userId, createAt, photo } = doc.data();
-      //   return {
-      //     tweetId: doc.id,
-      //     tweet,
-      //     username,
-      //     userAvatar,
-      //     userId,
-      //     createAt,
-      //     photo,
-      //   };
-      // });
+      /* const QuerySnapshot = await getDocs(tweetsQuery);
+       const tweets = QuerySnapshot.docs.map((doc) => {
+        const { tweet, username, userAvatar, userId, createAt, photo } = doc.data();
+         return {
+           tweetId: doc.id,
+          tweet,
+           username,
+           userAvatar,
+           userId,
+           createAt,
+          photo,
+         };
+       });*/
       unsubscribe = await onSnapshot(tweetsQuery, (snapshot) => {
         const tweets = snapshot.docs.map((doc) => {
-          const { tweet, username, userAvatar, userId, createAt, photo } = doc.data();
+          const { tweet, username, userAvatar, userId, createAt, photo, updateAt } = doc.data();
           return {
             tweetId: doc.id,
             tweet,
@@ -39,6 +39,7 @@ export default function Timeline() {
             userAvatar,
             userId,
             createAt,
+            updateAt,
             photo,
           };
         });

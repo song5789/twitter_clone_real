@@ -10,7 +10,9 @@ export const Wrapper = styled.div`
   top: 0;
   left: 0;
   z-index: 99;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 `;
 export const Container = styled.div`
   display: flex;
