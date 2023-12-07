@@ -3,7 +3,7 @@ import { auth, db, storage } from "../firebase";
 import { Close, Container, LogoImg, Title, Wrapper } from "./auth-components";
 import { useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Description } from "./reset-password-form";
 
 const Form = styled.form`
@@ -58,29 +58,41 @@ const SubmitButton = styled.input`
     background-color: rgba(0, 171, 238, 0.8);
   }
 `;
+const FileDelete = styled.button`
+  position: absolute;
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  background-color: rgba(0, 171, 238, 0.8);
+  color: white;
+  cursor: pointer;
+  display: none;
 
+  &:hover {
+    background-color: #00acee;
+    font-weight: 600;
+  }
+`;
 const ImageContainer = styled.div<{ editFile: any }>`
   display: flex;
   justify-content: center;
+  align-items: center;
   border: 1px solid rgba(167, 168, 168, 0.5);
   border-radius: 15px;
   overflow: hidden;
   position: relative;
 
+  &:hover {
+    ${FileDelete} {
+      display: block;
+    }
+  }
   ${(props) =>
     props.editFile &&
     css`
       img {
-        opacity: 0.8;
-      }
-      span {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-weight: 600;
-        font-size: 18px;
-        color: white;
+        opacity: 0.5;
       }
     `}
 `;
@@ -104,6 +116,7 @@ export default function EditTweetModal({
   const [editTweet, setEditTweet] = useState(tweet);
   const [editFile, setEditFile] = useState<File | null>(null);
   const [isLoading, setLoading] = useState(false);
+  const [isDeleted, setDeleted] = useState(false);
   const user = auth.currentUser;
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditTweet(e.target.value);
@@ -142,6 +155,16 @@ export default function EditTweetModal({
       setLoading(false);
       showModal("editModal", false);
     }
+  };
+  const onDeleteFile = async () => {
+    if (user?.uid !== userId || !user) return;
+    const targetDoc = doc(db, "tweets", tweetId);
+    await updateDoc(targetDoc, {
+      photo: null,
+    });
+    const targetLocation = ref(storage, `tweets/${user?.uid}/${tweetId}`);
+    await deleteObject(targetLocation);
+    setDeleted(true);
   };
 
   return (
@@ -183,8 +206,8 @@ export default function EditTweetModal({
             <SubmitButton type="submit" value={isLoading ? "게시 중..." : "수정 하기"} />
           </ButtonContainer>
           <ImageContainer editFile={editFile}>
-            {photo ? <DeleteImage src={photo} /> : null}
-            {editFile ? <span>이미지가 교체됩니다.</span> : null}
+            {!photo ? null : isDeleted ? null : <DeleteImage src={photo} />}
+            <FileDelete onClick={onDeleteFile}>이 사진을 지우기</FileDelete>
           </ImageContainer>
           <Description>이미지는 변경할 이미지를 업로드 후 수정을 눌러야 반영됩니다.</Description>
         </Form>

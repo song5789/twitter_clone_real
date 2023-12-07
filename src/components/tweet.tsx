@@ -13,6 +13,10 @@ const Wrapper = styled.div`
   gap: 15px;
   padding: 20px;
   border-bottom: 1px solid rgba(167, 168, 168, 0.4);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 `;
 const Row = styled.div``;
 const Column = styled.div``;
@@ -207,7 +211,7 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
         <Header>
           <Row>
             <Username>{username}</Username>
-            <Timestamp>{` · ${updateAt ? `${convertToLocaleDate(updateAt)} (수정됨)` : convertToLocaleDate(createAt)}`}</Timestamp>
+            <Timestamp>{` · ${updateAt ? `${convertToLocaleDate(createAt)} (수정됨)` : convertToLocaleDate(createAt)}`}</Timestamp>
           </Row>
           <MeatBallButton onClick={togglePopup}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -246,7 +250,7 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </Close>
-                    <TweetEditButton>사용가능한 메뉴가 없습니다.</TweetEditButton>
+                    <TweetEditButton>Empty!</TweetEditButton>
                   </Column>
                 )}
               </TweetPopupMenu>

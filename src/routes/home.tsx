@@ -3,8 +3,6 @@ import PostTweetForm from "../components/post-tweet-form";
 import Timeline from "../components/timeline";
 
 const Wrapper = styled.div`
-  display: grid;
-  grid-template-columns: 3fr 1fr;
   overflow-y: scroll;
 `;
 const Column = styled.div`
@@ -35,7 +33,6 @@ export default function Home() {
         <PostTweetForm />
         <Timeline />
       </Column>
-      <div style={{ borderLeft: "1px solid gray" }}>sideMenu</div>
     </Wrapper>
   );
 }

@@ -2,10 +2,12 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { auth } from "../firebase";
 import { useState } from "react";
+import PostTweetModal from "./post-tweet-modal";
+import SideMenu from "./side-menu";
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-columns: 1fr 4fr;
+  grid-template-columns: 1fr 4fr 1fr;
   width: 100%;
   height: 100%;
   min-width: 1000px;
@@ -90,7 +92,7 @@ const Avatar = styled.div`
     color: #7997a3;
   }
 `;
-const AvatarImg = styled.img`
+export const AvatarImg = styled.img`
   width: 100%;
 `;
 const UserName = styled.span`
@@ -124,10 +126,12 @@ const PostingButton = styled.button`
   }
 `;
 const UserExtraMenu = styled.div`
-  width: 100%;
+  width: 150%;
   padding: 20px 0;
   border-radius: 30px;
   box-shadow: 0px 0px 5px white;
+  background-color: black;
+  overflow: hidden;
   position: absolute;
   top: -100%;
   left: 0;
@@ -137,7 +141,7 @@ const Logout = styled.button`
   width: 100%;
   border: none;
   font-size: 16px;
-  background-color: transparent;
+  background-color: inherit;
   color: white;
   padding: 10px;
   text-align: start;
@@ -150,14 +154,17 @@ const Logout = styled.button`
 
 export default function Layout() {
   const [toggle, setToggle] = useState(false);
+  const [postTweet, setPostTweet] = useState(false);
   const navigate = useNavigate();
   const user = auth.currentUser;
-
   const onToggle = () => {
     setToggle(!toggle);
   };
   const moveToLogoutPage = () => {
     navigate("/logout");
+  };
+  const showPostModal = () => {
+    setPostTweet(true);
   };
 
   return (
@@ -193,7 +200,7 @@ export default function Layout() {
               프로필
             </Link>
           </MenuItem>
-          <PostingButton>게시하기</PostingButton>
+          <PostingButton onClick={showPostModal}>게시하기</PostingButton>
         </Column>
         <CurrentUser onClick={onToggle}>
           <Avatar>
@@ -237,6 +244,8 @@ export default function Layout() {
         </CurrentUser>
       </Menu>
       <Outlet />
+      <SideMenu />
+      {postTweet ? <PostTweetModal setPostTweet={setPostTweet} /> : null}
     </Wrapper>
   );
 }
