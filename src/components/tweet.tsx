@@ -2,10 +2,12 @@ import styled, { css } from "styled-components";
 import { ITweet } from "../model/interface";
 import { Close } from "./auth-components";
 import { convertToLocaleDate } from "../library/methods";
-import { auth } from "../firebase";
-import { useState } from "react";
+import { auth, db } from "../firebase";
+import { useState, useEffect } from "react";
 import { DeleteTweetModal } from "./delete-tweet-modal";
 import EditTweetModal from "./edit-tweet-modal";
+import TweetComment from "./tweet-comment";
+import { collection, getDocs } from "firebase/firestore";
 
 const Wrapper = styled.div`
   display: grid;
@@ -102,10 +104,13 @@ const TweetMenu = styled.div`
   margin-top: 10px;
 `;
 const TweetMenuItem = styled.div<{ isReply?: boolean; isLike?: boolean }>`
-  width: 40px;
+  width: 50px;
   display: flex;
   justify-content: start;
   align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   cursor: pointer;
 
   ${(props) =>
@@ -160,7 +165,7 @@ const TweetPopupMenu = styled.div`
   top: 0;
   padding: 35px 0 10px 0;
 `;
-const TweetEditButton = styled.button`
+const TweetEditButton = styled.button<{ isDelete?: boolean }>`
   width: 200px;
   padding: 10px;
   background-color: transparent;
@@ -173,6 +178,12 @@ const TweetEditButton = styled.button`
   &:hover {
     background-color: rgba(255, 255, 255, 0.3);
   }
+
+  ${(props) =>
+    props.isDelete &&
+    css`
+      color: tomato;
+    `}
 `;
 
 export default function Tweet({ username, photo, tweet, userAvatar, createAt, userId, tweetId, updateAt }: ITweet) {
@@ -181,8 +192,14 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
   const [showEditPopup, setEditPopup] = useState({
     deleteModal: false,
     editModal: false,
+    replyContainer: false,
   });
-  const { deleteModal, editModal } = showEditPopup;
+  const [countValue, setCountValue] = useState({
+    commentCount: 0,
+    likeCount: 0,
+  });
+  const { deleteModal, editModal, replyContainer } = showEditPopup;
+  const { commentCount, likeCount } = countValue;
   const togglePopup = () => {
     setPopup(!showPopup);
   };
@@ -192,6 +209,27 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
       [target]: toggleValue,
     });
   };
+  const toggleReply = () => {
+    setEditPopup({
+      ...showEditPopup,
+      replyContainer: !replyContainer,
+    });
+  };
+  const setCount = (target: string, value: number) => {
+    setCountValue({
+      ...countValue,
+      [target]: value,
+    });
+  };
+
+  useEffect(() => {
+    const getCount = async () => {
+      const commentRef = collection(db, "tweets", tweetId, "comments");
+      const commentCount = await getDocs(commentRef);
+      setCount("commentCount", commentCount.docs.length);
+    };
+    getCount();
+  }, []);
   return (
     <Wrapper>
       <Avatar>
@@ -239,7 +277,8 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
                     <TweetEditButton
                       onClick={() => {
                         showModal("deleteModal", true);
-                      }}>
+                      }}
+                      isDelete>
                       이 게시글을 삭제
                     </TweetEditButton>
                   </Column>
@@ -264,7 +303,7 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
           </PhotoContainer>
         ) : null}
         <TweetMenu>
-          <TweetMenuItem isReply>
+          <TweetMenuItem isReply onClick={toggleReply}>
             <TweetMenuIcon isReply>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path
@@ -274,6 +313,7 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
                 />
               </svg>
             </TweetMenuIcon>
+            {commentCount}
           </TweetMenuItem>
           <TweetMenuItem isLike>
             <TweetMenuIcon isLike>
@@ -285,11 +325,13 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
                 />
               </svg>
             </TweetMenuIcon>
+            {likeCount}
           </TweetMenuItem>
         </TweetMenu>
       </Column>
       {deleteModal ? <DeleteTweetModal showModal={showModal} userId={userId} tweetId={tweetId} photo={photo} /> : null}
       {editModal ? <EditTweetModal showModal={showModal} userId={userId} tweetId={tweetId} photo={photo} tweet={tweet} /> : null}
+      {replyContainer ? <TweetComment tweetId={tweetId} /> : null}
     </Wrapper>
   );
 }

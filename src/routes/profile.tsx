@@ -188,7 +188,7 @@ export default function Profile() {
           </Column>
           <EditProfile onClick={editModalToggle}>프로필 수정</EditProfile>
         </Info>
-        <ProfileHeader>내 게시물</ProfileHeader>
+        <ProfileHeader>게시글</ProfileHeader>
         <Tweets>
           {tweets.map((tweet) => (
             <Tweet key={tweet.tweetId} {...tweet} />
