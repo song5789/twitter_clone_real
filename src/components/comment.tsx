@@ -29,10 +29,17 @@ const Avatar = styled.div`
     color: #7997a3;
   }
 `;
-const Username = styled.span`
+const Username = styled.span<{ userId: string | null; commentUser: string }>`
   padding: 5px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
+  font-weight: 600;
+  opacity: 0.8;
+  ${(props) =>
+    props.userId === props.commentUser &&
+    css`
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 15px;
+      color: white;
+    `}
 `;
 const CommentTime = styled.div`
   color: gray;
@@ -96,7 +103,9 @@ export default function Comment({ commentId, commentUser, commentUsername, comme
           </svg>
         )}
       </Avatar>
-      <Username>{commentUsername}</Username>
+      <Username userId={user?.uid ?? null} commentUser={commentUser}>
+        {commentUsername}
+      </Username>
       <Payload>{comment}</Payload>
       <CommentTime>{` · ${updateAt ? `${convertToLocaleDate(updateAt)} (수정됨)` : convertToLocaleDate(createAt)}`}</CommentTime>
       {user?.uid === commentUser ? (

@@ -14,6 +14,12 @@ const Wrapper = styled.div`
   gap: 10px;
   overflow-y: scroll;
 `;
+const Center = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+  color: gray;
+`;
 const Header = styled.div`
   height: 50px;
   background-color: rgba(0, 0, 0, 0.7);
@@ -189,11 +195,15 @@ export default function Profile() {
           <EditProfile onClick={editModalToggle}>프로필 수정</EditProfile>
         </Info>
         <ProfileHeader>게시글</ProfileHeader>
-        <Tweets>
-          {tweets.map((tweet) => (
-            <Tweet key={tweet.tweetId} {...tweet} />
-          ))}
-        </Tweets>
+        {tweets.length !== 0 ? (
+          <Tweets>
+            {tweets.map((tweet) => (
+              <Tweet key={tweet.tweetId} {...tweet} />
+            ))}
+          </Tweets>
+        ) : (
+          <Center>게시한 글이 없습니다.</Center>
+        )}
       </ProfileContainer>
       {isEditToggle ? <EditProfileModal setEditToggle={setEditToggle} /> : null}
     </Wrapper>

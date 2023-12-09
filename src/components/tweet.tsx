@@ -103,7 +103,7 @@ const TweetMenu = styled.div`
   color: gray;
   margin-top: 10px;
 `;
-const TweetMenuItem = styled.div<{ isReply?: boolean; isLike?: boolean }>`
+const TweetMenuItem = styled.div<{ isComment?: boolean; isLike?: boolean; isOpen?: boolean }>`
   width: 50px;
   display: flex;
   justify-content: start;
@@ -114,11 +114,17 @@ const TweetMenuItem = styled.div<{ isReply?: boolean; isLike?: boolean }>`
   cursor: pointer;
 
   ${(props) =>
-    props.isReply &&
+    props.isComment &&
     css`
       &:hover {
         color: #00acee;
       }
+    `}
+  ${(props) =>
+    props.isComment &&
+    props.isOpen &&
+    css`
+      color: #00acee;
     `}
   ${(props) =>
     props.isLike &&
@@ -127,8 +133,14 @@ const TweetMenuItem = styled.div<{ isReply?: boolean; isLike?: boolean }>`
         color: #f52acc;
       }
     `}
+  ${(props) =>
+    props.isLike &&
+    props.isOpen &&
+    css`
+      color: #f52acc;
+    `}
 `;
-const TweetMenuIcon = styled.div<{ isReply?: boolean; isLike?: boolean }>`
+const TweetMenuIcon = styled.div<{ isComment?: boolean; isLike?: boolean }>`
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -139,7 +151,7 @@ const TweetMenuIcon = styled.div<{ isReply?: boolean; isLike?: boolean }>`
     width: 70%;
   }
   ${(props) =>
-    props.isReply &&
+    props.isComment &&
     css`
       &:hover {
         background-color: rgba(0, 171, 238, 0.2);
@@ -192,13 +204,13 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
   const [showEditPopup, setEditPopup] = useState({
     deleteModal: false,
     editModal: false,
-    replyContainer: false,
+    commentCon: false,
   });
   const [countValue, setCountValue] = useState({
     commentCount: 0,
     likeCount: 0,
   });
-  const { deleteModal, editModal, replyContainer } = showEditPopup;
+  const { deleteModal, editModal, commentCon } = showEditPopup;
   const { commentCount, likeCount } = countValue;
   const togglePopup = () => {
     setPopup(!showPopup);
@@ -209,10 +221,10 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
       [target]: toggleValue,
     });
   };
-  const toggleReply = () => {
+  const toggleComment = () => {
     setEditPopup({
       ...showEditPopup,
-      replyContainer: !replyContainer,
+      commentCon: !commentCon,
     });
   };
   const setCount = (target: string, value: number) => {
@@ -303,8 +315,8 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
           </PhotoContainer>
         ) : null}
         <TweetMenu>
-          <TweetMenuItem isReply onClick={toggleReply}>
-            <TweetMenuIcon isReply>
+          <TweetMenuItem isComment isOpen={commentCon} onClick={toggleComment}>
+            <TweetMenuIcon isComment>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path
                   strokeLinecap="round"
@@ -331,7 +343,7 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
       </Column>
       {deleteModal ? <DeleteTweetModal showModal={showModal} userId={userId} tweetId={tweetId} photo={photo} /> : null}
       {editModal ? <EditTweetModal showModal={showModal} userId={userId} tweetId={tweetId} photo={photo} tweet={tweet} /> : null}
-      {replyContainer ? <TweetComment tweetId={tweetId} /> : null}
+      {commentCon ? <TweetComment tweetId={tweetId} /> : null}
     </Wrapper>
   );
 }
