@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { ITweet } from "../model/interface";
+import { IComment, ILikes, ITweet } from "../model/interface";
 import { Close } from "./auth-components";
 import { convertToLocaleDate } from "../library/methods";
 import { auth, db } from "../firebase";
@@ -7,7 +7,8 @@ import { useState, useEffect } from "react";
 import { DeleteTweetModal } from "./delete-tweet-modal";
 import EditTweetModal from "./edit-tweet-modal";
 import TweetComment from "./tweet-comment";
-import { collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, doc, onSnapshot, orderBy, query, writeBatch } from "firebase/firestore";
+import { Unsubscribe, User } from "firebase/auth";
 
 const Wrapper = styled.div`
   display: grid;
@@ -206,12 +207,9 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
     editModal: false,
     commentCon: false,
   });
-  const [countValue, setCountValue] = useState({
-    commentCount: 0,
-    likeCount: 0,
-  });
+  const [comments, setComments] = useState<IComment[]>([]);
+  const [likes, setLikes] = useState<ILikes[]>([]);
   const { deleteModal, editModal, commentCon } = showEditPopup;
-  const { commentCount, likeCount } = countValue;
   const togglePopup = () => {
     setPopup(!showPopup);
   };
@@ -227,20 +225,87 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
       commentCon: !commentCon,
     });
   };
-  const setCount = (target: string, value: number) => {
-    setCountValue({
-      ...countValue,
-      [target]: value,
-    });
+  const toggleLike = async (likesArray: ILikes[], user: User | null, tweetId: string) => {
+    // db의 내의 문서를 조작합니다.
+    const batch = writeBatch(db);
+    try {
+      // 불러온 좋아요 목록이 0개라면 좋아요한 뒤 함수 종료.
+      if (likesArray.length === 0) {
+        const collectionRef = collection(db, "tweets", tweetId, "likes");
+        await addDoc(collectionRef, {
+          likedUserId: user?.uid,
+          likedAt: Date.now(),
+        });
+        return;
+      }
+      // 좋아요 목록에서 현재 유저가 눌렀던게 확인된다면
+      const myLike = likesArray.filter((like) => {
+        return like.likedUserId === user?.uid;
+      });
+      // 삭제
+      if (myLike) {
+        const docRef = doc(db, "tweets", tweetId, "likes", myLike[0].likedDocId);
+        batch.delete(docRef);
+        await batch.commit();
+        return;
+      } else {
+        // 안눌렀다면 추가.
+        const collectionRef = collection(db, "tweets", tweetId, "likes");
+        await addDoc(collectionRef, {
+          likedUserId: user?.uid,
+          likedAt: Date.now(),
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(() => {
-    const getCount = async () => {
-      const commentRef = collection(db, "tweets", tweetId, "comments");
-      const commentCount = await getDocs(commentRef);
-      setCount("commentCount", commentCount.docs.length);
+    let likeUnsubscribe: Unsubscribe | null = null;
+    let commentUnsubscribe: Unsubscribe | null = null;
+    // 해당 트윗에 작성된 코멘트를 불러옵니다.
+    const getComment = async () => {
+      const commentsRef = collection(db, "tweets", tweetId, "comments");
+      const commentQuery = query(commentsRef, orderBy("createAt", "asc"));
+      commentUnsubscribe = await onSnapshot(commentQuery, (snapshot) => {
+        const comments = snapshot.docs.map((doc) => {
+          const { commentUser, commentUsername, commentUserAvatar, comment, createAt, updateAt } = doc.data();
+          return {
+            commentId: doc.id,
+            commentUser,
+            commentUsername: commentUsername || "익명",
+            commentUserAvatar: commentUserAvatar || null,
+            comment,
+            createAt,
+            updateAt: updateAt || null,
+            tweetId,
+          };
+        });
+        setComments(comments);
+      });
     };
-    getCount();
+    // 해당 트윗에 좋아요 목록을 불러옵니다. (실시간)
+    const getLikes = async () => {
+      const likesRef = collection(db, "tweets", tweetId, "likes");
+      likeUnsubscribe = await onSnapshot(likesRef, (snapshot) => {
+        const likesArray = snapshot.docs.map((doc) => {
+          const { likedUserId, likedAt } = doc.data();
+          return {
+            likedDocId: doc.id,
+            likedUserId,
+            likedAt,
+          };
+        });
+        setLikes(likesArray);
+      });
+    };
+    getLikes();
+    getComment();
+    return () => {
+      likeUnsubscribe && likeUnsubscribe();
+      commentUnsubscribe && commentUnsubscribe();
+    };
   }, []);
   return (
     <Wrapper>
@@ -325,9 +390,13 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
                 />
               </svg>
             </TweetMenuIcon>
-            {commentCount}
+            {comments.length}
           </TweetMenuItem>
-          <TweetMenuItem isLike>
+          <TweetMenuItem
+            isLike
+            onClick={() => {
+              toggleLike(likes, user, tweetId);
+            }}>
             <TweetMenuIcon isLike>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path
@@ -337,13 +406,13 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
                 />
               </svg>
             </TweetMenuIcon>
-            {likeCount}
+            {likes.length}
           </TweetMenuItem>
         </TweetMenu>
       </Column>
       {deleteModal ? <DeleteTweetModal showModal={showModal} userId={userId} tweetId={tweetId} photo={photo} /> : null}
       {editModal ? <EditTweetModal showModal={showModal} userId={userId} tweetId={tweetId} photo={photo} tweet={tweet} /> : null}
-      {commentCon ? <TweetComment tweetId={tweetId} /> : null}
+      {commentCon ? <TweetComment tweetId={tweetId} comments={comments} /> : null}
     </Wrapper>
   );
 }

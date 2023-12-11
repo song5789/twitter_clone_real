@@ -1,10 +1,6 @@
 import styled from "styled-components";
 import TweetCommentForm from "./tweet-comment-form";
-import { useState, useEffect } from "react";
 import { IComment } from "../model/interface";
-import { Unsubscribe } from "firebase/auth";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { db } from "../firebase";
 import Comment from "./comment";
 
 const Wrapper = styled.div`
@@ -26,35 +22,7 @@ const AlertBox = styled.div`
   color: gray;
   font-style: italic;
 `;
-export default function TweetComment({ tweetId }: { tweetId: string }) {
-  const [comments, setComments] = useState<IComment[]>([]);
-  useEffect(() => {
-    let unsubscribe: Unsubscribe | null = null;
-    const fetchComments = async () => {
-      const commentsRef = collection(db, "tweets", tweetId, "comments");
-      const commentQuery = query(commentsRef, orderBy("createAt", "asc"));
-      unsubscribe = await onSnapshot(commentQuery, (snapshot) => {
-        const comments = snapshot.docs.map((doc) => {
-          const { commentUser, commentUsername, commentUserAvatar, comment, createAt, updateAt } = doc.data();
-          return {
-            commentId: doc.id,
-            commentUser,
-            commentUsername: commentUsername || "익명",
-            commentUserAvatar: commentUserAvatar || null,
-            comment,
-            createAt,
-            updateAt: updateAt || null,
-            tweetId,
-          };
-        });
-        setComments(comments);
-      });
-    };
-    fetchComments();
-    return () => {
-      unsubscribe && unsubscribe();
-    };
-  }, []);
+export default function TweetComment({ tweetId, comments }: { tweetId: string; comments: IComment[] }) {
   return (
     <>
       <div></div>

@@ -19,3 +19,9 @@ export interface IComment {
   updateAt?: number;
   tweetId: string;
 }
+
+export interface ILikes {
+  likedDocId: string;
+  likedUserId: string;
+  likedAt: number;
+}
