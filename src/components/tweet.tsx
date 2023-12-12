@@ -228,28 +228,20 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
   const toggleLike = async (likesArray: ILikes[], user: User | null, tweetId: string) => {
     // db의 내의 문서를 조작합니다.
     const batch = writeBatch(db);
+    if (!user) return;
     try {
-      // 불러온 좋아요 목록이 0개라면 좋아요한 뒤 함수 종료.
-      if (likesArray.length === 0) {
-        const collectionRef = collection(db, "tweets", tweetId, "likes");
-        await addDoc(collectionRef, {
-          likedUserId: user?.uid,
-          likedAt: Date.now(),
-        });
-        return;
-      }
-      // 좋아요 목록에서 현재 유저가 눌렀던게 확인된다면
+      // 좋아요 목록에서 현재 유저의 uid 와 동일한게 있다면
       const myLike = likesArray.filter((like) => {
         return like.likedUserId === user?.uid;
       });
       // 삭제
-      if (myLike) {
+      if (myLike.length === 1) {
         const docRef = doc(db, "tweets", tweetId, "likes", myLike[0].likedDocId);
         batch.delete(docRef);
         await batch.commit();
         return;
       } else {
-        // 안눌렀다면 추가.
+        // 없으면 추가.
         const collectionRef = collection(db, "tweets", tweetId, "likes");
         await addDoc(collectionRef, {
           likedUserId: user?.uid,

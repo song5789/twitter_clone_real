@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import { Close, Container, DisabledButton, Error, Form, Input, InputWrapper, Title, Wrapper } from "./auth-components";
+import { addDoc, collection } from "firebase/firestore";
 
 export default function CreateAccount({ onVisible }: { onVisible?: any }) {
   const navigate = useNavigate();
@@ -42,6 +43,14 @@ export default function CreateAccount({ onVisible }: { onVisible?: any }) {
       const credentials = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(credentials.user, {
         displayName: name,
+      });
+      const collectionRef = collection(db, "users");
+      await addDoc(collectionRef, {
+        uid: credentials.user.uid,
+        displayName: credentials.user.displayName || null,
+        photoURL: credentials.user.photoURL || null,
+        email: credentials.user.email,
+        createAt: Date.now(),
       });
       navigate("/");
     } catch (e) {

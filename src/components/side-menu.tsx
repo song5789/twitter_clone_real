@@ -18,7 +18,7 @@ export default function SideMenu() {
   return (
     <Wrapper>
       <Background>
-        <BackImage src="im_go_to_mars.png" />
+        <BackImage src="/im_go_to_mars.png" />
       </Background>
     </Wrapper>
   );

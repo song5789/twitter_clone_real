@@ -25,3 +25,11 @@ export interface ILikes {
   likedUserId: string;
   likedAt: number;
 }
+
+export interface IUserInfo {
+  uid: string;
+  displayName: string | null;
+  photoURL: string | null;
+  email: string;
+  createAt: number;
+}

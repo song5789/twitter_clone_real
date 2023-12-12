@@ -1,7 +1,9 @@
 import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import styled from "styled-components";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { addDoc, collection } from "firebase/firestore";
+import { handleUserInfoQuery } from "../library/methods";
 
 const Button = styled.span<{ width: any }>`
   background-color: white;
@@ -35,7 +37,9 @@ export default function GithubButton({ isLogin, widthValue }: { isLogin: boolean
   const onClick = async () => {
     try {
       const provider = new GithubAuthProvider();
-      await signInWithPopup(auth, provider);
+      const credentials = await signInWithPopup(auth, provider);
+      const collectionRef = collection(db, "users");
+      handleUserInfoQuery(collectionRef, credentials);
       navigate("/");
     } catch (error) {
       console.log(error);

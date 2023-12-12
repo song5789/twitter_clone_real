@@ -12,6 +12,8 @@ import ProtectedRoute from "./components/protected-route";
 import ResetPassword from "./routes/reset-password";
 import Profile from "./routes/profile";
 import Logout from "./routes/logout";
+import ProfileUid from "./routes/profile-uid";
+import ProtectedProfile from "./components/protectedProfile";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +31,14 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        path: "/profile/:uid",
+        element: (
+          <ProtectedProfile>
+            <ProfileUid />
+          </ProtectedProfile>
+        ),
       },
     ],
   },
