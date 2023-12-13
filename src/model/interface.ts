@@ -27,6 +27,7 @@ export interface ILikes {
 }
 
 export interface IUserInfo {
+  docId: string;
   uid: string;
   displayName: string | null;
   photoURL: string | null;

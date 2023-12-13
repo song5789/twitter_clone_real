@@ -25,3 +25,21 @@ export const handleUserInfoQuery = async (collections: CollectionReference<Docum
     createAt: Date.now(),
   });
 };
+
+export const fetchUserInfo = async (targetUid: string | undefined, stateSetFuction: any) => {
+  const target = collection(db, "users");
+  const userQuery = query(target, where("uid", "==", targetUid));
+  const snapshot = await getDocs(userQuery);
+  const userSnapshot = snapshot.docs.map((doc) => {
+    const { uid, displayName, photoURL, email, createAt } = doc.data();
+    return {
+      uid,
+      displayName,
+      photoURL,
+      email,
+      createAt,
+      docId: doc.id,
+    };
+  });
+  stateSetFuction(userSnapshot[0]);
+};

@@ -1,129 +1,35 @@
-import styled from "styled-components";
 import { AvatarImg } from "../components/layout";
 import { auth, db } from "../firebase";
 import { useState, useEffect } from "react";
 import { EditProfileModal } from "../components/edit-profile-modal";
 import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
-import { ITweet } from "../model/interface";
+import { ITweet, IUserInfo } from "../model/interface";
 import Tweet from "../components/tweet";
 import { Unsubscribe } from "firebase/auth";
+import {
+  ProfileAvatar,
+  ProfileBanner,
+  ProfileBannerImg,
+  ProfileCenter,
+  ProfileColumn,
+  ProfileContainer,
+  ProfileEditButton,
+  ProfileHeader,
+  ProfileInfo,
+  ProfileRow,
+  ProfileSubHeader,
+  ProfileText,
+  ProfileTweets,
+  ProfileUsername,
+  ProfileWrapper,
+} from "../components/profile-components";
+import { convertToLocaleDate, fetchUserInfo } from "../library/methods";
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow-y: scroll;
-`;
-const Center = styled.div`
-  display: flex;
-  justify-content: center;
-  padding-top: 10px;
-  color: gray;
-`;
-const Header = styled.div`
-  height: 50px;
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 14.5px;
-  font-size: 20px;
-  font-weight: 600;
-  border-bottom: 1px solid rgba(167, 168, 168, 0.5);
-  position: sticky;
-  top: 0;
-  z-index: 1;
-`;
-const ProfileContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-`;
-const Banner = styled.div`
-  width: 100%;
-  height: 200px;
-  background-color: rgba(255, 255, 255, 0.5);
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  svg {
-    width: 10%;
-    color: rgba(0, 0, 0, 0.5);
-  }
-`;
-const BannerImg = styled.img`
-  width: 100%;
-  object-fit: cover;
-`;
-const Avatar = styled.div`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #b3d6e3;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  svg {
-    width: 100%;
-    color: #7997a3;
-  }
-`;
-const Info = styled.div`
-  padding: 10px 20px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 20px;
-  position: relative;
-  border-bottom: 1px solid rgba(167, 168, 168, 0.5);
-`;
-const Username = styled.span`
-  font-size: 25px;
-  font-weight: 600;
-`;
-const UserEmail = styled.span`
-  font-size: 16px;
-  color: gray;
-`;
-const EditProfile = styled.button`
-  padding: 20px;
-  position: absolute;
-  right: 5%;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 20px;
-  font-size: 18px;
-  font-weight: 600;
-  background-color: black;
-  color: white;
-  cursor: pointer;
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-`;
-const ProfileHeader = styled(Header)`
-  position: static;
-`;
-const Tweets = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
 export default function Profile() {
   const [bannerUrl, setBannerUrl] = useState("");
   const [isEditToggle, setEditToggle] = useState(false);
   const [tweets, setTweets] = useState<ITweet[]>([]);
+  const [userSnapshot, setUserSnapshot] = useState<IUserInfo | null>(null);
   const user = auth.currentUser;
   const editModalToggle = () => {
     setEditToggle(true);
@@ -153,17 +59,18 @@ export default function Profile() {
       });
     };
     fetchTweets();
+    fetchUserInfo(user?.uid, setUserSnapshot);
     return () => {
       unsubscribe && unsubscribe();
     };
   }, []);
   return (
-    <Wrapper>
-      <Header>프로필</Header>
+    <ProfileWrapper>
+      <ProfileHeader>프로필</ProfileHeader>
       <ProfileContainer>
-        <Banner>
+        <ProfileBanner>
           {bannerUrl ? (
-            <BannerImg />
+            <ProfileBannerImg />
           ) : (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
               <path
@@ -173,9 +80,9 @@ export default function Profile() {
               />
             </svg>
           )}
-        </Banner>
-        <Info>
-          <Avatar>
+        </ProfileBanner>
+        <ProfileInfo>
+          <ProfileAvatar>
             {user?.photoURL ? (
               <AvatarImg src={user.photoURL} />
             ) : (
@@ -187,25 +94,28 @@ export default function Profile() {
                 />
               </svg>
             )}
-          </Avatar>
-          <Column>
-            <Username>{user?.displayName ?? "익명"}</Username>
-            <UserEmail>{user?.email}</UserEmail>
-          </Column>
-          <EditProfile onClick={editModalToggle}>프로필 수정</EditProfile>
-        </Info>
-        <ProfileHeader>게시글</ProfileHeader>
+          </ProfileAvatar>
+          <ProfileColumn>
+            <ProfileUsername>{user?.displayName ?? "익명"}</ProfileUsername>
+            <ProfileRow>
+              <ProfileText>{user?.email}</ProfileText>
+              <ProfileText>{`가입일: ${convertToLocaleDate(userSnapshot?.createAt ?? 1)}`}</ProfileText>
+            </ProfileRow>
+          </ProfileColumn>
+          <ProfileEditButton onClick={editModalToggle}>프로필 수정</ProfileEditButton>
+        </ProfileInfo>
+        <ProfileSubHeader>게시글</ProfileSubHeader>
         {tweets.length !== 0 ? (
-          <Tweets>
+          <ProfileTweets>
             {tweets.map((tweet) => (
               <Tweet key={tweet.tweetId} {...tweet} />
             ))}
-          </Tweets>
+          </ProfileTweets>
         ) : (
-          <Center>게시한 글이 없습니다.</Center>
+          <ProfileCenter>게시한 글이 없습니다.</ProfileCenter>
         )}
       </ProfileContainer>
       {isEditToggle ? <EditProfileModal setEditToggle={setEditToggle} /> : null}
-    </Wrapper>
+    </ProfileWrapper>
   );
 }

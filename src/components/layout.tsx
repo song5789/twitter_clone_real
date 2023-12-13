@@ -202,7 +202,7 @@ export default function Layout() {
             </Link>
           </MenuItem>
           <PostingButton onClick={showPostModal}>게시하기</PostingButton>
-          <Description>반응형은 아직 구현되지 않았습니다.</Description>
+          <Description>반응형은 아직 구현되지 않았습니다. {`(PC 전용!)`}</Description>
         </Column>
         <CurrentUser onClick={onToggle}>
           <Avatar>

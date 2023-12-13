@@ -9,6 +9,7 @@ import EditTweetModal from "./edit-tweet-modal";
 import TweetComment from "./tweet-comment";
 import { addDoc, collection, doc, onSnapshot, orderBy, query, writeBatch } from "firebase/firestore";
 import { Unsubscribe, User } from "firebase/auth";
+import { Link } from "react-router-dom";
 
 const Wrapper = styled.div`
   display: grid;
@@ -49,6 +50,14 @@ const Header = styled.div`
 const Username = styled.span`
   font-weight: 600;
   font-size: 18px;
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 const Payload = styled.p`
   margin: 10px 0;
@@ -98,7 +107,7 @@ const MeatBallButton = styled.div`
     background-color: rgba(0, 171, 238, 0.2);
   }
 `;
-const TweetMenu = styled.div`
+const TweetBottomMenu = styled.div`
   display: flex;
   gap: 20px;
   color: gray;
@@ -190,6 +199,10 @@ const TweetEditButton = styled.button<{ isDelete?: boolean }>`
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.3);
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
   }
 
   ${(props) =>
@@ -317,7 +330,9 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
       <Column>
         <Header>
           <Row>
-            <Username>{username}</Username>
+            <Username>
+              <Link to={`/profile/${userId}`}>{username}</Link>
+            </Username>
             <Timestamp>{` · ${updateAt ? `${convertToLocaleDate(createAt)} (수정됨)` : convertToLocaleDate(createAt)}`}</Timestamp>
           </Row>
           <MeatBallButton onClick={togglePopup}>
@@ -358,7 +373,9 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </Close>
-                    <TweetEditButton>Empty!</TweetEditButton>
+                    <Link to={`/profile/${userId}`}>
+                      <TweetEditButton>작성자 프로필 보기</TweetEditButton>
+                    </Link>
                   </Column>
                 )}
               </TweetPopupMenu>
@@ -371,7 +388,7 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
             <Photo src={photo} />
           </PhotoContainer>
         ) : null}
-        <TweetMenu>
+        <TweetBottomMenu>
           <TweetMenuItem isComment isOpen={commentCon} onClick={toggleComment}>
             <TweetMenuIcon isComment>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -400,7 +417,7 @@ export default function Tweet({ username, photo, tweet, userAvatar, createAt, us
             </TweetMenuIcon>
             {likes.length}
           </TweetMenuItem>
-        </TweetMenu>
+        </TweetBottomMenu>
       </Column>
       {deleteModal ? <DeleteTweetModal showModal={showModal} userId={userId} tweetId={tweetId} photo={photo} /> : null}
       {editModal ? <EditTweetModal showModal={showModal} userId={userId} tweetId={tweetId} photo={photo} tweet={tweet} /> : null}
