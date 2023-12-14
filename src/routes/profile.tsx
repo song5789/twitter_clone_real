@@ -60,6 +60,7 @@ export default function Profile() {
     };
     fetchTweets();
     fetchUserInfo(user?.uid, setUserSnapshot);
+    setBannerUrl("");
     return () => {
       unsubscribe && unsubscribe();
     };

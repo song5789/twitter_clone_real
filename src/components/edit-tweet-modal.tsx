@@ -1,10 +1,10 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { auth, db, storage } from "../firebase";
 import { Close, Container, LogoImg, Title, Wrapper } from "./auth-components";
 import { useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { Description } from "./reset-password-form";
+import { encodeFileToBase64 } from "../library/methods";
 
 const Form = styled.form`
   width: 100%;
@@ -74,7 +74,7 @@ const FileDelete = styled.button`
     font-weight: 600;
   }
 `;
-const ImageContainer = styled.div<{ editFile: any }>`
+const ImageContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -88,13 +88,6 @@ const ImageContainer = styled.div<{ editFile: any }>`
       display: block;
     }
   }
-  ${(props) =>
-    props.editFile &&
-    css`
-      img {
-        opacity: 0.5;
-      }
-    `}
 `;
 const DeleteImage = styled.img`
   width: 100%;
@@ -114,9 +107,10 @@ export default function EditTweetModal({
   tweet: string;
 }) {
   const [editTweet, setEditTweet] = useState(tweet);
+  const [readerUrl, setReaderUrl] = useState("");
   const [editFile, setEditFile] = useState<File | null>(null);
   const [isLoading, setLoading] = useState(false);
-  const [isDeleted, setDeleted] = useState(false);
+  const [isPhotoDeleted, setPhotoDeleted] = useState(false);
   const user = auth.currentUser;
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditTweet(e.target.value);
@@ -128,6 +122,7 @@ export default function EditTweetModal({
         alert("1MB 이하의 파일만 첨부할 수 있습니다.");
       } else {
         setEditFile(files[0]);
+        encodeFileToBase64(files[0], setReaderUrl);
       }
     }
   };
@@ -149,6 +144,14 @@ export default function EditTweetModal({
           photo: editUrl,
         });
       }
+      if (isPhotoDeleted) {
+        const targetDoc = doc(db, "tweets", tweetId);
+        await updateDoc(targetDoc, {
+          photo: null,
+        });
+        const targetLocation = ref(storage, `tweets/${user?.uid}/${tweetId}`);
+        await deleteObject(targetLocation);
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -156,15 +159,11 @@ export default function EditTweetModal({
       showModal("editModal", false);
     }
   };
-  const onDeleteFile = async () => {
+  const fileDeleteHandler = () => {
     if (user?.uid !== userId || !user) return;
-    const targetDoc = doc(db, "tweets", tweetId);
-    await updateDoc(targetDoc, {
-      photo: null,
-    });
-    const targetLocation = ref(storage, `tweets/${user?.uid}/${tweetId}`);
-    await deleteObject(targetLocation);
-    setDeleted(true);
+    setPhotoDeleted(!isPhotoDeleted);
+    setEditFile(null);
+    setReaderUrl("");
   };
 
   return (
@@ -205,12 +204,11 @@ export default function EditTweetModal({
             <AttachFileInput onChange={onFileChange} id="editfile" type="file" accept="image/*" />
             <SubmitButton type="submit" value={isLoading ? "게시 중..." : "수정 하기"} />
           </ButtonContainer>
-          <ImageContainer editFile={editFile}>
-            {!photo ? null : isDeleted ? null : <DeleteImage src={photo} />}
-            <FileDelete onClick={onDeleteFile}>이 사진을 지우기</FileDelete>
-          </ImageContainer>
-          <Description>이미지는 변경할 이미지를 업로드 후 수정을 눌러야 반영됩니다.</Description>
         </Form>
+        <ImageContainer>
+          <DeleteImage src={readerUrl ? readerUrl : isPhotoDeleted ? "" : photo} />
+          <FileDelete onClick={fileDeleteHandler}>사진 삭제</FileDelete>
+        </ImageContainer>
       </Container>
     </Wrapper>
   );

@@ -43,3 +43,14 @@ export const fetchUserInfo = async (targetUid: string | undefined, stateSetFucti
   });
   stateSetFuction(userSnapshot[0]);
 };
+
+export const encodeFileToBase64 = (file: any, setter: any) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  return new Promise<void>((resolve) => {
+    reader.onload = () => {
+      setter(reader.result);
+      resolve();
+    };
+  });
+};

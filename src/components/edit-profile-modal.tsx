@@ -7,6 +7,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
 import { collection, getDocs, query, where, writeBatch } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { encodeFileToBase64 } from "../library/methods";
 
 const EditModalTitle = styled(Title)`
   text-align: center;
@@ -61,23 +62,13 @@ export function EditProfileModal({ setEditToggle }: { setEditToggle: any }) {
         alert("1MB 이하의 파일만 첨부할 수 있습니다.");
       } else {
         try {
-          encodeFileToBase64(files[0]);
+          encodeFileToBase64(files[0], setAvatar);
           setEditFile(files[0]);
         } catch (error) {
           console.log(error);
         }
       }
     }
-  };
-  const encodeFileToBase64 = (file: any) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    return new Promise<void>((resolve) => {
-      reader.onload = () => {
-        setAvatar(reader.result);
-        resolve();
-      };
-    });
   };
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditname(e.target.value);
@@ -106,6 +97,25 @@ export function EditProfileModal({ setEditToggle }: { setEditToggle: any }) {
       console.log(e);
     }
   };
+  const updateUserData = async (editUrl?: any) => {
+    const batch = writeBatch(db);
+    const collectionRef = collection(db, "users");
+    const q = query(collectionRef, where("uid", "==", user?.uid));
+    const userSnapshot = await getDocs(q);
+    userSnapshot.docs.forEach((doc) => {
+      batch.update(doc.ref, {
+        displayName: editname,
+      });
+    });
+    if (editUrl) {
+      userSnapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, {
+          photoURL: editUrl,
+        });
+      });
+    }
+    await batch.commit();
+  };
   const onSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user || editname == "") return;
@@ -127,8 +137,10 @@ export function EditProfileModal({ setEditToggle }: { setEditToggle: any }) {
         });
         // 사진을 업로드 했을경우 올린 트윗의 아바타 URL 변경
         updateTweetUserdata(avatarUrl);
+        updateUserData(avatarUrl);
       }
       // 사진 업로드 유무 관계없이 트윗의 유저정보 변경
+      updateUserData();
       updateTweetUserdata();
       setLoading(false);
       navigate("/profile");

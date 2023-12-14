@@ -2,7 +2,7 @@ import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import styled from "styled-components";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
-import { addDoc, collection } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import { handleUserInfoQuery } from "../library/methods";
 
 const Button = styled.span<{ width: any }>`

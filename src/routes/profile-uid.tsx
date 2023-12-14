@@ -51,6 +51,7 @@ export default function ProfileUid() {
   useEffect(() => {
     fetchTweets();
     fetchUserInfo(uid, setUserSnapshot);
+    setBannerUrl("");
   }, []);
   return (
     <ProfileWrapper>
