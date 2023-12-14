@@ -82,6 +82,7 @@ const ImageContainer = styled.div`
   border-radius: 15px;
   overflow: hidden;
   position: relative;
+  margin-top: 10px;
 
   &:hover {
     ${FileDelete} {
