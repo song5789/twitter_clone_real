@@ -40,7 +40,7 @@ export const ProfileContainer = styled.div`
 export const ProfileColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 `;
 export const ProfileBanner = styled.div`
   width: 100%;

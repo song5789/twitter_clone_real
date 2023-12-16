@@ -16,7 +16,6 @@ import {
   ProfileEditButton,
   ProfileHeader,
   ProfileInfo,
-  ProfileRow,
   ProfileSubHeader,
   ProfileText,
   ProfileTweets,
