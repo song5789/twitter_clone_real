@@ -4,6 +4,10 @@ import Timeline from "../components/timeline";
 
 const Wrapper = styled.div`
   overflow-y: scroll;
+
+  @media screen and (max-width: 1000px) {
+    border-right: 1px solid rgba(167, 168, 168, 0.5);
+  }
 `;
 const Column = styled.div`
   display: grid;

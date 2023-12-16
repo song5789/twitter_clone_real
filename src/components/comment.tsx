@@ -33,6 +33,7 @@ const Username = styled.span<{ userId: string | null; commentUser: string }>`
   padding: 5px;
   font-weight: 600;
   opacity: 0.8;
+  white-space: nowrap;
   ${(props) =>
     props.userId === props.commentUser &&
     css`
@@ -40,9 +41,19 @@ const Username = styled.span<{ userId: string | null; commentUser: string }>`
       border-radius: 15px;
       color: white;
     `}
+
+  @media screen and (max-width:700px) {
+    width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 const CommentTime = styled.div`
   color: gray;
+
+  @media screen and (max-width: 700px) {
+    display: none;
+  }
 `;
 const Payload = styled.p`
   display: block;
@@ -60,6 +71,7 @@ const Button = styled.button<{ deleteComment?: boolean }>`
   background-color: transparent;
   color: gray;
   text-align: center;
+  white-space: nowrap;
   cursor: pointer;
 
   &:hover {

@@ -98,10 +98,10 @@ export default function Profile() {
           </ProfileAvatar>
           <ProfileColumn>
             <ProfileUsername>{user?.displayName ?? "익명"}</ProfileUsername>
-            <ProfileRow>
+            <ProfileColumn>
               <ProfileText>{user?.email}</ProfileText>
               <ProfileText>{`가입일: ${convertToLocaleDate(userSnapshot?.createAt ?? 1)}`}</ProfileText>
-            </ProfileRow>
+            </ProfileColumn>
           </ProfileColumn>
           <ProfileEditButton onClick={editModalToggle}>프로필 수정</ProfileEditButton>
         </ProfileInfo>

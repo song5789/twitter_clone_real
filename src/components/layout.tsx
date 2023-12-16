@@ -4,15 +4,20 @@ import { auth } from "../firebase";
 import { useState } from "react";
 import PostTweetModal from "./post-tweet-modal";
 import SideMenu from "./side-menu";
-import { Description } from "./reset-password-form";
 
 const Wrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 4fr 1fr;
+  padding: 0 10%;
   width: 100%;
   height: 100%;
-  min-width: 1000px;
-  max-width: 1200px;
+
+  @media screen and (max-width: 1000px) {
+    display: flex;
+  }
+  @media screen and (max-width: 700px) {
+    padding: 0;
+  }
 `;
 const Menu = styled.div`
   display: flex;
@@ -20,6 +25,15 @@ const Menu = styled.div`
   justify-content: space-between;
   border-right: 1px solid rgba(167, 168, 168, 0.5);
   padding: 0px 10px 10px 10px;
+
+  @media screen and (max-width: 1000px) {
+    width: 40%;
+  }
+
+  @media screen and (max-width: 700px) {
+    width: 20%;
+    align-items: center;
+  }
 `;
 const Column = styled.div`
   width: 100%;
@@ -27,6 +41,9 @@ const Column = styled.div`
   flex-direction: column;
   align-items: start;
   gap: 15px;
+  @media screen and (max-width: 700px) {
+    align-items: center;
+  }
 `;
 const MenuItem = styled.div<{ isLogo?: boolean }>`
   cursor: pointer;
@@ -59,6 +76,9 @@ const MenuItem = styled.div<{ isLogo?: boolean }>`
     css`
       border-radius: 50%;
     `}
+  @media screen and (max-width:700px) {
+    width: 50px;
+  }
 `;
 const LogoImage = styled.img`
   width: 25px;
@@ -76,6 +96,13 @@ const CurrentUser = styled.div`
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  @media screen and (max-width: 700px) {
+    width: 70px;
+    justify-content: center;
+    padding: 0;
+    border-radius: 50%;
   }
 `;
 const Avatar = styled.div`
@@ -103,12 +130,19 @@ const UserName = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  @media screen and (max-width: 700px) {
+    display: none;
+  }
 `;
 const MeatBallMenu = styled.div`
   width: 30px;
 
   svg {
     width: 100%;
+  }
+  @media screen and (max-width: 700px) {
+    display: none;
   }
 `;
 const PostingButton = styled.button`
@@ -125,6 +159,29 @@ const PostingButton = styled.button`
   &:hover {
     background-color: rgba(0, 171, 238, 0.8);
   }
+  @media screen and (max-width: 700px) {
+    display: none;
+  }
+`;
+const PostingSmallButton = styled.div`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #00acee;
+  svg {
+    width: 30px;
+    color: white;
+  }
+  &:hover {
+    background-color: rgba(0, 171, 238, 0.8);
+  }
+  @media screen and (min-width: 700px) {
+    display: none;
+  }
 `;
 const UserExtraMenu = styled.div`
   width: 150%;
@@ -137,6 +194,11 @@ const UserExtraMenu = styled.div`
   top: -100%;
   left: 0;
   transform: translateY(-50%);
+
+  @media screen and (max-width: 700px) {
+    width: 250px;
+    z-index: 12;
+  }
 `;
 const Logout = styled.button`
   width: 100%;
@@ -150,6 +212,11 @@ const Logout = styled.button`
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+`;
+const Text = styled.span`
+  @media screen and (max-width: 700px) {
+    display: none;
   }
 `;
 
@@ -186,7 +253,7 @@ export default function Layout() {
                   d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
                 />
               </svg>
-              홈
+              <Text>홈</Text>
             </Link>
           </MenuItem>
           <MenuItem>
@@ -198,11 +265,27 @@ export default function Layout() {
                   d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
                 />
               </svg>
-              프로필
+              <Text>프로필</Text>
+            </Link>
+          </MenuItem>
+          <MenuItem>
+            <Link to="/">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <Text>검색</Text>
             </Link>
           </MenuItem>
           <PostingButton onClick={showPostModal}>게시하기</PostingButton>
-          <Description>반응형은 아직 구현되지 않았습니다. {`(PC 전용!)`}</Description>
+          <PostingSmallButton onClick={showPostModal}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+              />
+            </svg>
+          </PostingSmallButton>
         </Column>
         <CurrentUser onClick={onToggle}>
           <Avatar>

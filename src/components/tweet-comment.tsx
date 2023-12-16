@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 const Comments = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 `;
 const AlertBox = styled.div`
   display: flex;

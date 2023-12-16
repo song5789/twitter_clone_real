@@ -3,6 +3,9 @@ import styled from "styled-components";
 const Wrapper = styled.div`
   border-left: 1px solid rgba(167, 168, 168, 0.5);
   position: relative;
+  @media screen and (max-width: 1000px) {
+    display: none;
+  }
 `;
 const Background = styled.div`
   position: absolute;

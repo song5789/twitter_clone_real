@@ -1,8 +1,12 @@
 import styled, { css } from "styled-components";
 
 export const Dash = styled.span`
-  color: gray;
-  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+
+  i {
+    color: white;
+  }
 `;
 
 export const ConfirmButton = styled.button<{ cancel?: boolean }>`

@@ -21,8 +21,14 @@ const Wrapper = styled.div`
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
   }
+  @media screen and (max-width: 700px) {
+    padding: 5px;
+  }
 `;
-const Row = styled.div``;
+const Row = styled.div`
+  display: flex;
+  align-items: center;
+`;
 const Column = styled.div``;
 const Avatar = styled.div`
   width: 45px;
@@ -37,6 +43,10 @@ const Avatar = styled.div`
   svg {
     width: 100%;
     color: #7997a3;
+  }
+  @media screen and (max-width: 700px) {
+    width: 35px;
+    height: 35px;
   }
 `;
 const AvatarImg = styled.img`
@@ -58,10 +68,17 @@ const Username = styled.span`
       text-decoration: underline;
     }
   }
+
+  @media screen and (max-width: 700px) {
+    font-size: 15px;
+  }
 `;
 const Payload = styled.p`
   margin: 10px 0;
   font-size: 18px;
+  @media screen and (max-width: 700px) {
+    font-size: 16px;
+  }
 `;
 const PhotoContainer = styled.div`
   border-radius: 30px;
@@ -73,6 +90,11 @@ const Photo = styled.img`
 `;
 const Timestamp = styled.span`
   color: gray;
+  font-size: 15px;
+
+  @media screen and (max-width: 700px) {
+    font-size: 12px;
+  }
 `;
 const MeatBallButton = styled.div`
   width: 40px;
@@ -105,6 +127,9 @@ const MeatBallButton = styled.div`
       color: #00acee;
     }
     background-color: rgba(0, 171, 238, 0.2);
+  }
+  @media screen and (max-width: 700px) {
+    position: static;
   }
 `;
 const TweetBottomMenu = styled.div`
@@ -186,6 +211,13 @@ const TweetPopupMenu = styled.div`
   left: -400%;
   top: 0;
   padding: 35px 0 10px 0;
+
+  @media screen and (max-width: 700px) {
+    left: 60%;
+  }
+  @media screen and (max-width: 500px) {
+    left: 42%;
+  }
 `;
 const TweetEditButton = styled.button<{ isDelete?: boolean }>`
   width: 200px;

@@ -5,6 +5,10 @@ export const ProfileWrapper = styled.div`
   flex-direction: column;
   gap: 10px;
   overflow-y: scroll;
+
+  @media screen and (max-width: 1000px) {
+    border-right: 1px solid rgba(167, 168, 168, 0.5);
+  }
 `;
 export const ProfileCenter = styled.div`
   display: flex;
@@ -70,6 +74,10 @@ export const ProfileAvatar = styled.div`
     width: 100%;
     color: #7997a3;
   }
+  @media screen and (max-width: 500px) {
+    width: 60px;
+    height: 60px;
+  }
 `;
 export const ProfileInfo = styled.div`
   padding: 10px 20px;
@@ -79,14 +87,40 @@ export const ProfileInfo = styled.div`
   gap: 20px;
   position: relative;
   border-bottom: 1px solid rgba(167, 168, 168, 0.5);
+
+  @media screen and (max-width: 1200px) {
+    padding: 5px 10px;
+    justify-content: space-between;
+  }
 `;
 export const ProfileUsername = styled.span`
   font-size: 25px;
   font-weight: 600;
+
+  @media screen and (max-width: 700px) {
+    font-size: 20px;
+  }
+  @media screen and (max-width: 400px) {
+    font-size: 18px;
+  }
 `;
 export const ProfileText = styled.span`
   font-size: 16px;
   color: gray;
+
+  @media screen and (max-width: 1200px) {
+    font-size: 13px;
+  }
+  @media screen and (max-width: 700px) {
+    font-size: 11px;
+  }
+  @media screen and (max-width: 400px) {
+    font-size: 9px;
+    width: 50px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 `;
 export const ProfileEditButton = styled.button`
   padding: 20px;
@@ -102,6 +136,11 @@ export const ProfileEditButton = styled.button`
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  @media screen and (max-width: 1200px) {
+    padding: 10px;
+    position: static;
   }
 `;
 export const ProfileSubHeader = styled(ProfileHeader)`

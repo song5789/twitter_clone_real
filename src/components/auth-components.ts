@@ -18,11 +18,18 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 600px;
-  min-width: 400px;
   padding: 80px 100px;
   background-color: black;
   border-radius: 15px;
   position: relative;
+  @media screen and (max-width: 1000px) {
+    padding: 80px 70px;
+    width: 80%;
+  }
+  @media screen and (max-width: 500px) {
+    padding: 50px 25px;
+    width: 100%;
+  }
 
   p {
     text-align: center;

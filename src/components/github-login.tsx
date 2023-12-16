@@ -1,11 +1,11 @@
 import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { collection } from "firebase/firestore";
 import { handleUserInfoQuery } from "../library/methods";
 
-const Button = styled.span<{ width: any }>`
+const Button = styled.span<{ isLogin?: boolean }>`
   background-color: white;
   color: black;
   padding: 10px 10px;
@@ -17,9 +17,14 @@ const Button = styled.span<{ width: any }>`
   align-items: center;
   justify-content: center;
   margin: 15px 0;
-  width: ${(props) => props.width || "100%"};
+  width: 70%;
   cursor: pointer;
 
+  ${(props) =>
+    props.isLogin &&
+    css`
+      width: 100%;
+    `}
   &:hover {
     opacity: 0.8;
   }
@@ -27,12 +32,19 @@ const Button = styled.span<{ width: any }>`
   & b {
     font-weight: 600;
   }
+  @media screen and (max-width: 500px) {
+    font-size: 12px;
+  }
+
+  @media screen and (max-width: 350px) {
+    width: 100%;
+  }
 `;
 const Logo = styled.img`
   height: 25px;
 `;
 
-export default function GithubButton({ isLogin, widthValue }: { isLogin: boolean; widthValue: any }) {
+export default function GithubButton({ isLogin }: { isLogin: boolean }) {
   const navigate = useNavigate();
   const onClick = async () => {
     try {
@@ -46,7 +58,7 @@ export default function GithubButton({ isLogin, widthValue }: { isLogin: boolean
     }
   };
   return (
-    <Button width={widthValue} onClick={onClick}>
+    <Button onClick={onClick} isLogin={isLogin}>
       <Logo src="/github-logo.svg" />
       {isLogin ? (
         <span>

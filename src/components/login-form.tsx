@@ -25,6 +25,10 @@ const ForgotPassword = styled.button`
   }
 `;
 
+const LoginFormGithubButton = styled(GithubButton)`
+  width: 100%;
+`;
+
 export default function LoginForm({ onVisible }: { onVisible: any }) {
   const navigate = useNavigate();
 
@@ -87,9 +91,11 @@ export default function LoginForm({ onVisible }: { onVisible: any }) {
           </Close>
           <LogoImg src="/X_logo_2023_(white).png" />
           <Title marginValue={"20px"}>X 가입하기</Title>
-          <GithubButton isLogin={true} widthValue={false} />
+          <LoginFormGithubButton isLogin={true} />
           <p>
-            <Dash>―――――――――――</Dash> 또는 <Dash>―――――――――――</Dash>
+            <Dash>
+              ――――― <i>또는</i> ―――――
+            </Dash>
           </p>
           <Form onSubmit={onSubmit}>
             <InputWrapper>
