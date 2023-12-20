@@ -14,6 +14,7 @@ import Profile from "./routes/profile";
 import Logout from "./routes/logout";
 import ProfileUid from "./routes/profile-uid";
 import ProtectedProfile from "./components/protectedProfile";
+import Search from "./routes/search";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,14 @@ const router = createBrowserRouter([
             <ProfileUid />
           </ProtectedProfile>
         ),
+      },
+      {
+        path: "/search",
+        element: <Search />,
+      },
+      {
+        path: "/search/:user",
+        element: <Search />,
       },
     ],
   },

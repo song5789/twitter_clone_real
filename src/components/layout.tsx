@@ -68,7 +68,7 @@ const MenuItem = styled.div<{ isLogo?: boolean }>`
     text-decoration: none;
   }
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
   }
 
   ${(props) =>
@@ -95,7 +95,7 @@ const CurrentUser = styled.div`
   position: relative;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
   }
 
   @media screen and (max-width: 700px) {
@@ -269,7 +269,7 @@ export default function Layout() {
             </Link>
           </MenuItem>
           <MenuItem>
-            <Link to="/">
+            <Link to="/search">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
