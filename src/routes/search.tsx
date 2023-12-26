@@ -41,7 +41,7 @@ const ReasultHeader = styled.div`
 `;
 
 export default function Search() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [searchUser, setSearchUser] = useState<string | null>("");
   const [searchResult, setSearchResult] = useState<IUserInfo[]>([]);
 
