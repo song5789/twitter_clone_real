@@ -1,7 +1,7 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { Input, InputWrapper } from "./auth-components";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -18,58 +18,61 @@ const SearchBarInput = styled(Input)`
 const SearchButton = styled.div`
   width: 10%;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 5px;
   background-color: #00acee;
   border-radius: 10px;
+  font-size: 1.1rem;
   font-weight: 600;
   &:hover {
     background-color: rgba(0, 171, 238, 0.8);
   }
-
-  a {
-    color: white;
-    text-decoration: none;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
 `;
-const DeleteValue = styled.label<{ userQuery: any }>`
-  position: absolute;
-  right: 2%;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  display: none;
+// const DeleteValue = styled.label<{ userQuery: any }>`
+//   position: absolute;
+//   right: 2%;
+//   top: 50%;
+//   transform: translateY(-50%);
+//   cursor: pointer;
+//   display: none;
 
-  ${(props) =>
-    props.userQuery &&
-    css`
-      display: block;
-    `}
-`;
+//   ${(props) =>
+//     props.userQuery &&
+//     css`
+//       display: block;
+//     `}
+// `;
 
 export default function SearchBar() {
   const [userQuery, setUserQuery] = useState("");
+  const navigate = useNavigate();
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserQuery(e.target.value);
   };
-  const deleteUserQuery = () => {
-    setUserQuery("");
+  // const deleteUserQuery = () => {
+  //   setUserQuery("");
+  // };
+  const onKeyPressed = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key == "Enter") {
+      navigate(`/search?username=${userQuery}`);
+      window.location.reload();
+    }
+  };
+  const onClick = () => {
+    navigate(`/search?username=${userQuery}`);
+    window.location.reload();
   };
   return (
     <Wrapper>
       <SearchBarInputWrapper>
-        <SearchBarInput type="text" placeholder="유저 검색..." value={userQuery} onChange={onChange} />
-        <DeleteValue onClick={deleteUserQuery} userQuery={userQuery}>
+        <SearchBarInput type="text" placeholder="유저 검색..." value={userQuery} onChange={onChange} onKeyDown={onKeyPressed} />
+        {/* <DeleteValue onClick={deleteUserQuery} userQuery={userQuery}>
           X
-        </DeleteValue>
+        </DeleteValue> */}
       </SearchBarInputWrapper>
-      <SearchButton>
-        <Link to={`/search/${userQuery}`}>검색</Link>
-      </SearchButton>
+      <SearchButton onClick={onClick}>검색</SearchButton>
     </Wrapper>
   );
 }
